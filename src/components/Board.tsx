@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { SpriteContext } from "../context/SpriteContext";
 
 import image1 from "../sprites/1.png";
@@ -38,12 +38,11 @@ const Board = ({ NumberS, SquareSize }: BoardProps) => {
   });
   const arr = [...new Array(NumberS * NumberS)].map((_, index) => index);
   const spriteRef = useRef(arr);
-  const spriteRefUse = (index) => (element) => {
+  const spriteRefUse = (index:number) => (element:number) => {
     spriteRef.current[index] = element;
   };
 
   const [squareSize, setSquareSize] = useState({ height: "4em", width: "4em" });
-  const [spriteSize, setSpriteSize] = useState({ height: "4em", width: "4em" });
   useEffect(() => {
     let array = Array.from(Array(NumberS * NumberS)).map((elemen, index) => {
       return {
@@ -67,15 +66,14 @@ const Board = ({ NumberS, SquareSize }: BoardProps) => {
     setSquareSize({ height: squareSize, width: squareSize });
   }, [SquareSize]);
 
-  const putSprite = (e, index, type) => {
-    spriteRef.current[index].focus();
+  const putSprite = (e:any, index:number, type:string) => {
     setSquareHightLight(true);
     console.log(e.target.style);
     console.log(type);
     if (squareWasClicked) {
       const acomodateBoard = numberArray;
 
-      const temp = acomodateBoard[prevSquare].coordinate;
+      const temp = acomodateBoard[prevSquare].coordinate
       acomodateBoard[prevSquare].coordinate = acomodateBoard[index].coordinate;
       acomodateBoard[index].coordinate = temp;
 

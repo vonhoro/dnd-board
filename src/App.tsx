@@ -11,7 +11,7 @@ console.log({ DndProvider });
 
 
 function App() {
-  // const {sprite,setSprite}= useContext(SpriteContext)
+   const [sprite,setSprite]= useState([1])
   const [numberS, setNumberS] = useState(10);
   const [squareSize, setSquareSize] = useState(4);
 
