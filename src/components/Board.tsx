@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { SpriteContext } from "../context/SpriteContext";
-
+import { moveSprite } from "../utils/moveSprite";
 import image1 from "../sprites/1.png";
 import image2 from "../sprites/2.png";
 import image3 from "../sprites/3.png";
@@ -24,41 +24,65 @@ const imageArray = [
   image9,
   image10,
 ];
-type BoardProps = { NumberS: number; SquareSize: number };
+type BoardProps = {
+  NumberColumns: number;
+  NumberRows: number;
+  SquareSize: number;
+};
 
-const Board = ({ NumberS, SquareSize }: BoardProps) => {
+const Board = ({ NumberColumns, NumberRows, SquareSize }: BoardProps) => {
+  // context
   const { sprite, setSprite } = useContext(SpriteContext);
-  const [numberSprites, setNumberSprites] = useState(0);
+
+  // states
+
   const [prevSquare, setPrevSquare] = useState(null);
   const [squareWasClicked, setSquareWasClicked] = useState(false);
   const [numberArray, setNumberArray] = useState<null | Array<any>>(null);
   const [squareHightLight, setSquareHightLight] = useState(false);
+  const [orderSprites, setOrderSprites] = useState<number>(0);
   const [numberColumns, setNumberColumns] = useState({
     gridTemplateColumns: "auto",
   });
-  const arr = [...new Array(NumberS * NumberS)].map((_, index) => index);
-  const spriteRef = useRef(arr);
-  const spriteRefUse = (index:number) => (element:number) => {
+  const [rotatingSprite, setRotatingSprite] = useState(false);
+
+  const [squareSize, setSquareSize] = useState({ height: "4em", width: "4em" });
+
+  // ref
+  const arr: Array<number> = [...new Array(NumberColumns * NumberRows)].map(
+    (_, index) => index
+  );
+  const spriteRef = useRef<any>(arr);
+  const spriteRefUse = (index: number) => (element: HTMLElement) => {
     spriteRef.current[index] = element;
   };
 
-  const [squareSize, setSquareSize] = useState({ height: "4em", width: "4em" });
+  // effects
+
   useEffect(() => {
-    let array = Array.from(Array(NumberS * NumberS)).map((elemen, index) => {
+    let row: number = 1;
+    let column: number = 0;
+    let array = Array.from(Array(NumberColumns * NumberRows)).map(() => {
+      column = column === NumberColumns ? 0 : column;
+      column += 1;
+
+      row = column === 1 ? row + 1 : row;
+
       return {
         content: "",
-        coordinate: [Math.trunc(index / NumberS + 1), (index % NumberS) + 1],
+        coordinate: [row, column],
+        size: [0, 0],
       };
     });
     setNumberArray(array);
     let numberOfColumns = "";
 
-    for (let i = 0; i < NumberS; i++) {
+    for (let i = 0; i < NumberColumns; i++) {
       numberOfColumns += `auto `;
     }
+    console.log(numberOfColumns);
     setNumberColumns({ gridTemplateColumns: numberOfColumns });
-    setNumberSprites(0);
-  }, [NumberS]);
+  }, [NumberColumns, NumberRows]);
 
   useEffect(() => {
     const squareSize = SquareSize + "em";
@@ -66,53 +90,144 @@ const Board = ({ NumberS, SquareSize }: BoardProps) => {
     setSquareSize({ height: squareSize, width: squareSize });
   }, [SquareSize]);
 
-  const putSprite = (e:any, index:number, type:string) => {
+  // functions
+
+  const putSprite = (e: any, index: number, type: string) => {
+    if (sprite.length === 3) {
+      const modifyArray = numberArray;
+
+      modifyArray[index].content = imageArray[sprite[0]];
+      modifyArray[index] = {
+        ...modifyArray[index],
+        size: [sprite[1], sprite[2]],
+        rotation: 0,
+        translation: [0, 0],
+        ofSet: [0, 1],
+        order: orderSprites,
+      };
+      setOrderSprites(orderSprites + 1);
+      setNumberArray(modifyArray);
+      setSquareWasClicked(false);
+      setSprite([1]);
+      return;
+    }
+
     setSquareHightLight(true);
-    console.log(e.target.style);
-    console.log(type);
+    if (type === "sprite") {
+      spriteRef.current[index].focus();
+    }
     if (squareWasClicked) {
+      if (type === "sprite") {
+        spriteRef.current[index].style.backgroundColor = "#30404d";
+      } else {
+        spriteRef.current[index].style.backgroundColor = "#202b33";
+      }
+
       const acomodateBoard = numberArray;
 
-      const temp = acomodateBoard[prevSquare].coordinate
+      const temp = acomodateBoard[prevSquare].coordinate;
       acomodateBoard[prevSquare].coordinate = acomodateBoard[index].coordinate;
       acomodateBoard[index].coordinate = temp;
 
       setNumberArray(acomodateBoard);
       setSquareWasClicked(false);
     } else {
+      spriteRef.current[index].style.backgroundColor = "white";
       setPrevSquare(index);
       setSquareWasClicked(true);
     }
   };
-  const removeSprite = (e, index) => {
+  const removeSprite = (e: React.MouseEvent, index: number) => {
     e.preventDefault();
     const modifyArray = numberArray;
-
+    setOrderSprites(orderSprites - 1);
     modifyArray[index].content = "";
     setNumberArray(modifyArray);
-    setNumberSprites(numberSprites - 1);
+    setRotatingSprite(!rotatingSprite);
     setSquareWasClicked(false);
   };
-  const rotateSprite = () => {
-    console.log("aaaaaaaaadladlkakdladkladadl");
-  };
-  useEffect(() => {
+  const rotateSprite = (e: React.KeyboardEvent, index: number) => {
     const modifyArray = numberArray;
-    if (numberSprites === NumberS * NumberS) return;
-    if (sprite.length === 3) {
-      const number = numberSprites;
+    e.preventDefault();
 
-      modifyArray[number].content = imageArray[sprite[0]];
-      modifyArray[number] = {
-        ...modifyArray[number],
-        size: [sprite[1], sprite[2]],
-        rotation: 0,
-        translation: [0, 0],
-      };
+    const check = moveSprite(numberArray[index], e.key);
+    if (check) {
+      modifyArray[index] = check;
+      setSquareWasClicked(false);
+      setRotatingSprite(!rotatingSprite);
       setNumberArray(modifyArray);
-      setNumberSprites(number + 1 * sprite[1]);
     }
-  }, [sprite]);
+    if (e.key === "a" || e.key === "A") {
+      switch (modifyArray[index].rotation) {
+        case 0:
+          modifyArray[index].ofSet = [1, 0];
+          break;
+        case 90:
+          modifyArray[index].ofSet = [0, -1];
+          break;
+        case -90:
+          modifyArray[index].ofSet = [0, 1];
+          break;
+        case 180:
+          modifyArray[index].ofSet = [-1, 0];
+          break;
+      }
+      setRotatingSprite(!rotatingSprite);
+      setNumberArray(modifyArray);
+    } else if (e.key === "d" || e.key === "D") {
+      switch (modifyArray[index].rotation) {
+        case 0:
+          modifyArray[index].ofSet = [-1, 0];
+          break;
+        case 90:
+          modifyArray[index].ofSet = [0, 1];
+          break;
+        case -90:
+          modifyArray[index].ofSet = [0, -1];
+          break;
+        case 180:
+          modifyArray[index].ofSet = [1, 0];
+          break;
+      }
+      setRotatingSprite(!rotatingSprite);
+      setNumberArray(modifyArray);
+    } else if (e.key === "s" || e.key === "S") {
+      switch (modifyArray[index].rotation) {
+        case 0:
+          modifyArray[index].ofSet = [0, -1];
+          break;
+        case 90:
+          modifyArray[index].ofSet = [-1, 0];
+          break;
+        case -90:
+          modifyArray[index].ofSet = [1, 0];
+          break;
+        case 180:
+          modifyArray[index].ofSet = [0, 1];
+          break;
+      }
+      setRotatingSprite(!rotatingSprite);
+      setNumberArray(modifyArray);
+    } else if (e.key === "w" || e.key === "W") {
+      switch (modifyArray[index].rotation) {
+        case 0:
+          modifyArray[index].ofSet = [0, 1];
+          break;
+        case 90:
+          modifyArray[index].ofSet = [1, 0];
+          break;
+        case -90:
+          modifyArray[index].ofSet = [-1, 0];
+          break;
+        case 180:
+          modifyArray[index].ofSet = [0, -1];
+          break;
+      }
+      setRotatingSprite(!rotatingSprite);
+      setNumberArray(modifyArray);
+    }
+  };
+
   return (
     <>
       <div className="Board" style={numberColumns}>
@@ -128,34 +243,36 @@ const Board = ({ NumberS, SquareSize }: BoardProps) => {
                       src={square.content}
                       alt="sprite"
                       key={index + 100}
-                      tabIndex="0"
+                      onFocus={(e) => (e.target.style.backgroundColor = "blue")}
+                      tabIndex={index}
                       style={{
                         width: `${SquareSize * square.size[0]}em`,
                         height: `${SquareSize * square.size[1]}em`,
-                        gridArea: `${square.coordinate[0]} / ${square.coordinate[1]} /span ${NumberS} / span ${NumberS}`,
+                        gridArea: `${square.coordinate[0]} / ${square.coordinate[1]} /span ${NumberRows} / span ${NumberColumns}`,
                         transform: `rotate(${square.rotation}deg) translate(${square.translation[0]}%,${square.translation[1]}%)`,
+                        boxShadow: `${square.ofSet[0]}em ${square.ofSet[1]}em 0 0 #106BA3 inset`,
+                        zIndex: 2 + square.order,
                       }}
                       onKeyUp={(e) => {
-                        rotateSprite();
+                        rotateSprite(e, index);
                       }}
-                      onFocus={(e) =>
-                        (e.target.style.backgroundColor = "white")
+                      onBlur={(e) =>
+                        (e.target.style.backgroundColor = "#30404d")
                       }
                       onClick={(e) => putSprite(e, index, "sprite")}
                       onContextMenu={(e) => removeSprite(e, index)}
-                      onMouseLeave={(e) => {
+                      onMouseLeave={(e: any) => {
                         if (squareHightLight) {
                           setSquareHightLight(false);
                           return;
                         }
-                        e.target.style.backgroundColor = "#30404d";
+                        const Sprite = e.target;
+
+                        Sprite.style.backgroundColor = "#30404d";
                       }}
                     />
                   ) : (
                     <div
-                      onFocus={(e) =>
-                        (e.target.style.backgroundColor = "white")
-                      }
                       key={index}
                       ref={spriteRefUse(index)}
                       className="square"
@@ -164,11 +281,12 @@ const Board = ({ NumberS, SquareSize }: BoardProps) => {
                         gridArea: `${square.coordinate[0]} / ${square.coordinate[1]}`,
                       }}
                       onClick={(e) => putSprite(e, index, "square")}
-                      onMouseLeave={(e) => {
+                      onMouseLeave={(e: any) => {
                         if (squareHightLight) {
                           setSquareHightLight(false);
                           return;
                         }
+
                         e.target.style.backgroundColor = "#202b33";
                       }}
                     >

@@ -1,13 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { SpriteContext } from "../context/SpriteContext";
-import { ItemTypes } from "../constants/Constants";
-import {
-  Popover,
-  PopoverInteractionKind,
-  Menu,
-  MenuItem,
-} from "@blueprintjs/core";
-import { useDrag } from "react-dnd";
+import { InputGroup, FormGroup } from "@blueprintjs/core";
 import image1 from "../sprites/1.png";
 import image2 from "../sprites/2.png";
 import image3 from "../sprites/3.png";
@@ -18,7 +11,11 @@ import image7 from "../sprites/7.png";
 import image8 from "../sprites/8.png";
 import image9 from "../sprites/9.png";
 import image10 from "../sprites/10.png";
-type SpritesHandlerProps = { SquareSize: number };
+type SpritesHandlerProps = {
+  SquareSize: number;
+  NumberColumns: number;
+  NumberRows: number;
+};
 
 const imageArray = [
   image1,
@@ -32,18 +29,26 @@ const imageArray = [
   image9,
   image10,
 ];
-const SpritesHandler = ({ SquareSize }: SpritesHandlerProps) => {
-  const { sprite, setSprite } = useContext(SpriteContext);
-  const [sizeMultiplierVertical, setSizeMultiplierVertical] = useState();
-  const [sizeMultiplierHorizontal, setSizeMultiplierHorizontal] = useState(1);
-  const [{ isDragging }, drag] = useDrag({
-    item: { type: ItemTypes.SPRITE },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-  });
+const SpritesHandler = ({
+  SquareSize,
+  NumberColumns,
+  NumberRows,
+}: SpritesHandlerProps) => {
+  const { setSprite } = useContext(SpriteContext);
+
   const [reRender, setReRender] = useState(true);
   const [sprites, setSprites] = useState([]);
+
+  // ref
+
+  const arr: Array<number> = [...new Array(imageArray.length)].map(
+    (_, index) => index
+  );
+  const spriteRef = useRef<any>(arr);
+  const spriteRefUse = (index: number) => (element: HTMLElement) => {
+    spriteRef.current[index] = element;
+  };
+
   useEffect(() => {
     let preparingSprites = [];
     for (const image of imageArray) {
@@ -58,39 +63,10 @@ const SpritesHandler = ({ SquareSize }: SpritesHandlerProps) => {
     setSprites(preparingSprites);
   }, [SquareSize]);
 
-  const spriteCliked = (index) => {
-    setSprite([
-      index,
-      sprites[index].horizontalMultiplier,
-      sprites[index].verticalMultiplier,
-    ]);
+  const spriteCliked = (index: number) => {
+    spriteRef.current[index].focus();
   };
-  const verticalMeasure = (index, action) => {
-    let editingSprite = sprites;
-    if (action === "increase") {
-      editingSprite[index].verticalMultiplier += 1;
-    } else {
-      editingSprite[index].verticalMultiplier -= 1;
-      if (editingSprite[index].verticalMultiplier === 0) {
-        editingSprite[index].verticalMultiplier += 1;
-      }
-    }
-    setSprites(editingSprite);
-    setReRender(!reRender);
-  };
-  const horizontalMeasure = (index, action) => {
-    let editingSprite = sprites;
-    if (action === "increase") {
-      editingSprite[index].horizontalMultiplier += 1;
-    } else {
-      editingSprite[index].horizontalMultiplier -= 1;
-      if (editingSprite[index].horizontalMultiplier === 0) {
-        editingSprite[index].horizontalMultiplier += 1;
-      }
-    }
-    setSprites(editingSprite);
-    setReRender(!reRender);
-  };
+
   return (
     <div className="Sprites-container">
       {sprites.length === 0 ? (
@@ -100,39 +76,70 @@ const SpritesHandler = ({ SquareSize }: SpritesHandlerProps) => {
           {" "}
           {sprites.map((sprite, index) => (
             <>
-              <Popover
-                key={index}
-                interactionKind={PopoverInteractionKind.HOVER}
+              <div
+                className="Sprite-details"
+                tabIndex={index}
+                ref={spriteRefUse(index)}
+                onClick={(e) => spriteCliked(index)}
+                onFocus={(e) => (e.target.style.backgroundColor = "white")}
+                onBlur={(e) => (e.target.style.backgroundColor = "auto")}
               >
                 <img
                   style={{
-                    height: `${sprite.height * sprite.verticalMultiplier}em`,
-                    width: `${sprite.width * sprite.horizontalMultiplier}em`,
+                    height: `${sprite.height}em`,
+                    width: `${sprite.width}em`,
                   }}
+                  key={89 + 1 * index}
                   className="sprite"
                   src={sprite.content}
                   alt="sprite"
-                  onClick={(e) => spriteCliked(index)}
                 />
-                <Menu>
-                  <MenuItem
-                    text="Vertical Increment"
-                    onClick={(e) => verticalMeasure(index, "increase")}
-                  />
-                  <MenuItem
-                    text="Vertical Decrement"
-                    onClick={(e) => verticalMeasure(index, "decrease")}
-                  />
-                  <MenuItem
-                    text="Horizontal Increment"
-                    onClick={(e) => horizontalMeasure(index, "increase")}
-                  />
-                  <MenuItem
-                    text="Horizontal Decrement"
-                    onClick={(e) => horizontalMeasure(index, "decrease")}
-                  />
-                </Menu>
-              </Popover>
+                <div className="sprite-inputs">
+                  <FormGroup label="Rows">
+                    <InputGroup
+                      className="sprite-size"
+                      intent={"primary"}
+                      type="number"
+                      defaultValue="1"
+                      min="1"
+                      max={NumberRows}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        if (e.target.valueAsNumber < 1) return;
+                        sprites[index].horizontalMultiplier =
+                          e.target.valueAsNumber;
+                        setReRender(!reRender);
+                        setSprite([
+                          index,
+                          sprites[index].horizontalMultiplier,
+                          sprites[index].verticalMultiplier,
+                        ]);
+                      }}
+                    />
+                  </FormGroup>
+
+                  <FormGroup label="Columns">
+                    <InputGroup
+                      className="sprite-size"
+                      intent={"primary"}
+                      type="number"
+                      defaultValue="1"
+                      min="1"
+                      max={NumberColumns}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        if (e.target.valueAsNumber < 1) return;
+                        sprites[index].verticalMultiplier =
+                          e.target.valueAsNumber;
+                        setReRender(!reRender);
+                        setSprite([
+                          index,
+                          sprites[index].horizontalMultiplier,
+                          sprites[index].verticalMultiplier,
+                        ]);
+                      }}
+                    />
+                  </FormGroup>
+                </div>
+              </div>
             </>
           ))}
         </>
