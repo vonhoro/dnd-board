@@ -9,7 +9,13 @@ import Board from "./components/Board";
 import SpritesHandler from "./components/SpritesHandler";
 import SpritePreview from "./components/SpritePreview";
 function App() {
-  const [sprite, setSprite] = useState([1]);
+  const [sprite, setSprite] = useState({
+    content: "",
+    horizontalMultiplier: 1,
+    verticalMultiplier: 1,
+    preview: true,
+    type: "neutral",
+  });
 
   const [numberRows, setNumberRows] = useState(10);
   const [numberColumns, setNumberColums] = useState(10);

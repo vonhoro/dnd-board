@@ -1,7 +1,11 @@
-type spriteObject= {size:Array<number>, rotation:number, translation:Array<number>}
+type spriteObject = {
+  size: Array<number>;
+  rotation: number;
+  translation: Array<number>;
+  ofSet: Array<number>;
+};
 
-
-export const moveSprite = (SpriteArray:spriteObject, Key: string) => {
+export const moveSprite = (SpriteArray: spriteObject, Key: string) => {
   const spriteArray = SpriteArray;
   const key: string = Key;
   const xAxis: number = spriteArray.size[0];
@@ -57,6 +61,66 @@ export const moveSprite = (SpriteArray:spriteObject, Key: string) => {
       yTranslate = 0;
     }
     spriteArray.translation = [xTranslate, yTranslate];
+  } else if (key === "a" || key === "A") {
+    switch (spriteArray.rotation) {
+      case 0:
+        spriteArray.ofSet = [1, 0];
+        break;
+      case 90:
+        spriteArray.ofSet = [0, -1];
+        break;
+      case -90:
+        spriteArray.ofSet = [0, 1];
+        break;
+      case 180:
+        spriteArray.ofSet = [-1, 0];
+        break;
+    }
+  } else if (key === "d" || key === "D") {
+    switch (spriteArray.rotation) {
+      case 0:
+        spriteArray.ofSet = [-1, 0];
+        break;
+      case 90:
+        spriteArray.ofSet = [0, 1];
+        break;
+      case -90:
+        spriteArray.ofSet = [0, -1];
+        break;
+      case 180:
+        spriteArray.ofSet = [1, 0];
+        break;
+    }
+  } else if (key === "s" || key === "S") {
+    switch (spriteArray.rotation) {
+      case 0:
+        spriteArray.ofSet = [0, -1];
+        break;
+      case 90:
+        spriteArray.ofSet = [-1, 0];
+        break;
+      case -90:
+        spriteArray.ofSet = [1, 0];
+        break;
+      case 180:
+        spriteArray.ofSet = [0, 1];
+        break;
+    }
+  } else if (key === "w" || key === "W") {
+    switch (spriteArray.rotation) {
+      case 0:
+        spriteArray.ofSet = [0, 1];
+        break;
+      case 90:
+        spriteArray.ofSet = [1, 0];
+        break;
+      case -90:
+        spriteArray.ofSet = [-1, 0];
+        break;
+      case 180:
+        spriteArray.ofSet = [0, -1];
+        break;
+    }
   } else {
     return false;
   }

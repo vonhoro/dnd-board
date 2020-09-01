@@ -9,6 +9,7 @@ $color5: #394b59;
 $primary: #137cbd;
 body {
   margin: 0;
+  color: $primary;
   background-color: $color1;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
@@ -46,7 +47,10 @@ body {
   .board-sprite {
     display: grid;
     grid-template-columns: 30% 70%;
+
     .sprite-preview {
+      text-align: center;
+      flex-direction: column;
       justify-content: center;
       display: flex;
       align-items: center;
@@ -59,7 +63,8 @@ body {
     .Board {
       display: grid;
       align-self: start;
-      justify-content: left .square {
+      justify-content: left;
+      .square {
         background-color: $color2;
         border: solid $color3 0.01em;
         cursor: pointer;

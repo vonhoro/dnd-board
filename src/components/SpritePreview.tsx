@@ -1,72 +1,80 @@
 import React, { useState, useEffect, useContext } from "react";
 import { SpriteContext } from "../context/SpriteContext";
-import image1 from "../sprites/1.png";
-import image2 from "../sprites/2.png";
-import image3 from "../sprites/3.png";
-import image4 from "../sprites/4.png";
-import image5 from "../sprites/5.png";
-import image6 from "../sprites/6.png";
-import image7 from "../sprites/7.png";
-import image8 from "../sprites/8.png";
-import image9 from "../sprites/9.png";
-import image10 from "../sprites/10.png";
-
-const imageArray = [
-  image1,
-  image2,
-  image3,
-  image4,
-  image5,
-  image6,
-  image7,
-  image8,
-  image9,
-  image10,
-];
+import { Radio, RadioGroup } from "@blueprintjs/core";
 type SpritePreviewProps = { SquareSize: number };
+
+const colors = {
+  ally: "#137CBD",
+  neutral: "#30404d",
+  enemy: "#DB3737",
+};
+
 const SpritePreview = ({ SquareSize }: SpritePreviewProps) => {
   type Sprite = {
     content: string;
-    width: number;
-    height: number;
-    index: number;
+    horizontalMultiplier: number;
+    verticalMultiplier: number;
   };
   const [reRender, setReRender] = useState(false);
   const [spritePreview, setSpritePreview] = useState<Sprite>({
     content: "",
-    width: 0,
-    height: 0,
-    index: 0,
+    horizontalMultiplier: 0,
+    verticalMultiplier: 0,
   });
-
+  const [radioControl, setRadioControl] = useState("neutral");
   const { sprite, setSprite } = useContext(SpriteContext);
 
   useEffect(() => {
-    const creatingSprite = {
-      content: imageArray[sprite[0]],
-      width: sprite[1],
-      height: sprite[2],
-      index: sprite[0],
-    };
-    setReRender(!reRender);
-    setSpritePreview(creatingSprite);
-    console.log("aaa");
+    if (sprite.preview) {
+      const creatingSprite = {
+        content: sprite.content,
+        horizontalMultiplier: sprite.horizontalMultiplier,
+        verticalMultiplier: sprite.verticalMultiplier,
+        type: sprite.type,
+      };
+      setReRender(!reRender);
+      setSpritePreview(creatingSprite);
+    }
   }, [sprite, SquareSize]);
 
   const spriteCliked = () => {
-    setSprite([spritePreview.index, spritePreview.width, spritePreview.height]);
+    setSprite({
+      ...spritePreview,
+      type: radioControl,
+      preview: false,
+    });
   };
   return (
     <div>
       {spritePreview ? (
         <div className="sprite-preview">
+          <RadioGroup
+            className="sprite-type"
+            label="Sprite type"
+            onChange={(e: React.FormEvent<HTMLInputElement>) => {
+              setRadioControl(e.currentTarget.value);
+            }}
+            selectedValue={radioControl}
+            inline={true}
+          >
+            <Radio label="Neutral" value="neutral" />
+            <Radio label="Enemy" value="enemy" />
+            <Radio label="Ally" value="ally" />
+          </RadioGroup>
           <img
             style={{
-              height: `${spritePreview.height * SquareSize}em`,
-              width: `${spritePreview.width * SquareSize}em`,
+              width: `${spritePreview.horizontalMultiplier * SquareSize}em`,
+              height: `${spritePreview.verticalMultiplier * SquareSize}em`,
+              backgroundColor: `${
+                radioControl === "neutral"
+                  ? colors.neutral
+                  : radioControl === "enemy"
+                  ? colors.enemy
+                  : colors.ally
+              }`,
             }}
             src={spritePreview.content}
-            alt="sprite"
+            alt=""
             onClick={(e: React.MouseEvent) => {
               spriteCliked();
             }}

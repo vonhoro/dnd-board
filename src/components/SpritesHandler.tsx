@@ -65,6 +65,13 @@ const SpritesHandler = ({
 
   const spriteCliked = (index: number) => {
     spriteRef.current[index].focus();
+    setSprite({
+      content: sprites[index].content,
+      horizontalMultiplier: sprites[index].horizontalMultiplier,
+      verticalMultiplier: sprites[index].verticalMultiplier,
+      preview: true,
+      type: "neutral",
+    });
   };
 
   return (
@@ -78,11 +85,7 @@ const SpritesHandler = ({
             <>
               <div
                 className="Sprite-details"
-                tabIndex={index}
-                ref={spriteRefUse(index)}
                 onClick={(e) => spriteCliked(index)}
-                onFocus={(e) => (e.target.style.backgroundColor = "white")}
-                onBlur={(e) => (e.target.style.backgroundColor = "auto")}
               >
                 <img
                   style={{
@@ -93,6 +96,12 @@ const SpritesHandler = ({
                   className="sprite"
                   src={sprite.content}
                   alt="sprite"
+                  tabIndex={index}
+                  ref={spriteRefUse(index)}
+                  onFocus={(e) => (e.target.style.backgroundColor = "white")}
+                  onBlur={(e) =>
+                    (e.target.style.backgroundColor = "transparent")
+                  }
                 />
                 <div className="sprite-inputs">
                   <FormGroup label="Rows">
@@ -108,11 +117,13 @@ const SpritesHandler = ({
                         sprites[index].horizontalMultiplier =
                           e.target.valueAsNumber;
                         setReRender(!reRender);
-                        setSprite([
-                          index,
-                          sprites[index].horizontalMultiplier,
-                          sprites[index].verticalMultiplier,
-                        ]);
+                        setSprite({
+                          content: sprite.content,
+                          horizontalMultiplier: e.target.valueAsNumber,
+                          verticalMultiplier: sprites[index].verticalMultiplier,
+                          preview: true,
+                          type: "neutral",
+                        });
                       }}
                     />
                   </FormGroup>
@@ -130,11 +141,14 @@ const SpritesHandler = ({
                         sprites[index].verticalMultiplier =
                           e.target.valueAsNumber;
                         setReRender(!reRender);
-                        setSprite([
-                          index,
-                          sprites[index].horizontalMultiplier,
-                          sprites[index].verticalMultiplier,
-                        ]);
+                        setSprite({
+                          content: sprite.content,
+                          horizontalMultiplier:
+                            sprites[index].horizontalMultiplier,
+                          verticalMultiplier: e.target.valueAsNumber,
+                          preview: true,
+                          type: "neutral",
+                        });
                       }}
                     />
                   </FormGroup>
