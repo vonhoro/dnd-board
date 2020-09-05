@@ -1,0 +1,37 @@
+{
+  "files": {
+    "main.css": "/DND-Board/static/css/main.9d9df25c.chunk.css",
+    "main.js": "/DND-Board/static/js/main.fd486de0.chunk.js",
+    "main.js.map": "/DND-Board/static/js/main.fd486de0.chunk.js.map",
+    "runtime-main.js": "/DND-Board/static/js/runtime-main.2700982e.js",
+    "runtime-main.js.map": "/DND-Board/static/js/runtime-main.2700982e.js.map",
+    "static/css/2.fef7232c.chunk.css": "/DND-Board/static/css/2.fef7232c.chunk.css",
+    "static/js/2.5db8ad9b.chunk.js": "/DND-Board/static/js/2.5db8ad9b.chunk.js",
+    "static/js/2.5db8ad9b.chunk.js.map": "/DND-Board/static/js/2.5db8ad9b.chunk.js.map",
+    "index.html": "/DND-Board/index.html",
+    "precache-manifest.d54112e7f66d546c27bb9ec0d48d8434.js": "/DND-Board/precache-manifest.d54112e7f66d546c27bb9ec0d48d8434.js",
+    "service-worker.js": "/DND-Board/service-worker.js",
+    "static/css/2.fef7232c.chunk.css.map": "/DND-Board/static/css/2.fef7232c.chunk.css.map",
+    "static/css/main.9d9df25c.chunk.css.map": "/DND-Board/static/css/main.9d9df25c.chunk.css.map",
+    "static/js/2.5db8ad9b.chunk.js.LICENSE.txt": "/DND-Board/static/js/2.5db8ad9b.chunk.js.LICENSE.txt",
+    "static/media/ApeBasicNeutral.png": "/DND-Board/static/media/ApeBasicNeutral.a05e12e6.png",
+    "static/media/BeeBasiNeutral.png": "/DND-Board/static/media/BeeBasiNeutral.237c04c5.png",
+    "static/media/GreenD.png": "/DND-Board/static/media/GreenD.286fe9dd.png",
+    "static/media/Monogo1.png": "/DND-Board/static/media/Monogo1.2a2b315e.png",
+    "static/media/abnb.png": "/DND-Board/static/media/abnb.a05e12e6.png",
+    "static/media/aquenbe.png": "/DND-Board/static/media/aquenbe.d108845f.png",
+    "static/media/bbnb.png": "/DND-Board/static/media/bbnb.237c04c5.png",
+    "static/media/hbnb.png": "/DND-Board/static/media/hbnb.68a3b912.png",
+    "static/media/humanBasicNeutral.png": "/DND-Board/static/media/humanBasicNeutral.68a3b912.png",
+    "static/media/index.css": "/DND-Board/static/media/icons-20.cef8cdbb.woff",
+    "static/media/monongo2png.png": "/DND-Board/static/media/monongo2png.4b44d169.png",
+    "static/media/wbnb.png": "/DND-Board/static/media/wbnb.3824e57a.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.2700982e.js",
+    "static/css/2.fef7232c.chunk.css",
+    "static/js/2.5db8ad9b.chunk.js",
+    "static/css/main.9d9df25c.chunk.css",
+    "static/js/main.fd486de0.chunk.js"
+  ]
+}
